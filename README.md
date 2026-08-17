@@ -77,3 +77,5 @@ Doctor
 Лойиҳанинг асосий мақсади — хусусий клиникаларда тиббий маълумотларни таҳлил қилиш жараёнини тезлаштириш, муҳим хавфларни эрта аниқлаш ва шифокорга структураланган second opinion тақдим этиш.
 
 Kelajak tibbiyoti — bu inson tajribasi va sun’iy intellekt kuchining birlashuvidir.
+
+Лойиханинг линки :  https://medical-koson.up.railway.app/

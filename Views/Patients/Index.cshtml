@@ -1,0 +1,67 @@
+@model List<Patient>
+@{
+    ViewData["Title"] = "Bemorlar registri";
+    string Initials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2 ? $"{parts[0][0]}{parts[1][0]}".ToUpper() : name[..Math.Min(2, name.Length)].ToUpper();
+    }
+    int Age(DateOnly b)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var a = today.Year - b.Year;
+        if (b > today.AddYears(-a)) a--;
+        return a;
+    }
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["REGISTR"]</div>
+        <h1>@L["Bemorlar registri"]</h1>
+        <p>@L["Har bir bemorning individual tibbiy tarixi va konsilium natijalari."]</p>
+    </div>
+    <a class="btn-key" asp-action="Create">+ @L["Yangi bemor"]</a>
+</div>
+
+<form method="get" class="filters">
+    <input name="q" value="@ViewBag.Query" placeholder="@L["Ism yoki telefon bo'yicha qidirish"]" />
+    <button class="btn" type="submit">@L["Qidirish"]</button>
+</form>
+
+<section class="panel anim d2">
+    @if (!Model.Any())
+    {
+        <div class="empty"><b>@L["Bemorlar topilmadi"]</b></div>
+    }
+    else
+    {
+        <div class="tw">
+            <table>
+                <thead><tr><th>@L["BEMOR"]</th><th>@L["YOSH"]</th><th>@L["JINS"]</th><th>@L["SURUNKALI"]</th><th>@L["ALLERGIYA"]</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="pt">
+                                <div class="av">@Initials(p.FullName)</div>
+                                <div><b>@p.FullName</b><span>@(p.Phone ?? "telefon yo'q")</span></div>
+                            </div>
+                        </td>
+                        <td class="mono">@Age(p.BirthDate)</td>
+                        <td class="dim">@p.Sex</td>
+                        <td class="dim">@(string.IsNullOrWhiteSpace(p.ChronicConditions) ? "—" : p.ChronicConditions)</td>
+                        <td class="dim">@(string.IsNullOrWhiteSpace(p.Allergies) ? "—" : p.Allergies)</td>
+                        <td style="text-align:right;white-space:nowrap">
+                            <a class="btn btn-sm" asp-controller="Labs" asp-action="Index" asp-route-patientId="@p.Id">@L["Analizlar"]</a>
+                            <a class="btn btn-sm" asp-action="Timeline" asp-route-id="@p.Id">@L["Timeline"]</a>
+                            <a class="btn btn-sm" asp-action="Details" asp-route-id="@p.Id">@L["Karta"]</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

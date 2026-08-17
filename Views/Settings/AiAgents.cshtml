@@ -1,0 +1,106 @@
+@model AgentSettingsVm
+@{
+    ViewData["Title"] = L["AI agent sozlamalari"];
+    var saved = TempData["saved"] is true;
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["TIZIM"]</div>
+        <h1>@L["AI agent sozlamalari"]</h1>
+        <p>@L["Har bir agent uchun alohida provayder, endpoint, kalit va model kiriting."]</p>
+    </div>
+    <div class="head-actions">
+        <span class="tag i">@Model.Rows.Count(r => r.Enabled && r.HasApiKey) / @Model.Rows.Count @L["ONLINE"]</span>
+    </div>
+</div>
+
+@if (saved)
+{
+    <div class="toast">✓ @L["Sozlamalar saqlandi"]</div>
+}
+
+<section class="panel anim d1 presets">
+    <div class="ph"><div><h2>@L["Provayder"]</h2></div></div>
+    <div class="preset-row">
+        @foreach (var p in Model.Presets)
+        {
+            <button type="button" class="chip"
+                    data-name="@p.Name" data-endpoint="@p.Endpoint" data-model="@p.Model">@p.Name</button>
+        }
+    </div>
+    <p class="hint">↑ @L["Provayder"] → @L["API kalit"]</p>
+</section>
+
+<form method="post" id="agent-form">
+    @Html.AntiForgeryToken()
+
+    <div class="agent-grid">
+        @for (var i = 0; i < Model.Rows.Count; i++)
+        {
+            var r = Model.Rows[i];
+            <section class="panel agent-card reveal" data-index="@i">
+                <input type="hidden" name="rows[@i].Key" value="@r.Key" />
+
+                <div class="agent-head">
+                    <div>
+                        <h2>@r.Display</h2>
+                        <p class="hint">@r.Key</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" name="rows[@i].Enabled" value="true" @(r.Enabled ? "checked" : "") />
+                        <input type="hidden" name="rows[@i].Enabled" value="false" />
+                        <span class="track"><span class="knob"></span></span>
+                    </label>
+                </div>
+
+                <div class="form two">
+                    <div class="f">
+                        <label>@L["Provayder"]</label>
+                        <input name="rows[@i].Provider" value="@r.Provider" class="j-provider" />
+                    </div>
+                    <div class="f">
+                        <label>@L["Model"]</label>
+                        <input name="rows[@i].Model" value="@r.Model" class="j-model" placeholder="gpt-5.6-terra" />
+                    </div>
+                </div>
+
+                <div class="f" style="margin-top:14px">
+                    <label>Endpoint</label>
+                    <input name="rows[@i].Endpoint" value="@r.Endpoint" class="j-endpoint" />
+                </div>
+
+                <div class="f" style="margin-top:14px">
+                    <label>@L["API kalit"]</label>
+                    <input name="rows[@i].ApiKey" type="password" autocomplete="off"
+                           placeholder="@(r.HasApiKey ? r.KeyHint : "sk-...")" />
+                    <small>@(r.HasApiKey ? L["Bo'sh qoldirsangiz eski kalit saqlanadi"] : L["Kalit kiritilmagan"])</small>
+                </div>
+
+                <div class="form two" style="margin-top:14px">
+                    <div class="f">
+                        <label>Temperature</label>
+                        <input name="rows[@i].Temperature" type="number" step="0.1" min="0" max="2" value="@r.Temperature" />
+                    </div>
+                    <div class="f">
+                        <label>Timeout</label>
+                        <input name="rows[@i].TimeoutSeconds" type="number" min="5" max="180" value="@r.TimeoutSeconds" />
+                    </div>
+                </div>
+
+                <div class="agent-foot">
+                    <span class="tag @(r.Enabled && r.HasApiKey ? "ok" : "off")">
+                        @(r.Enabled && r.HasApiKey ? L["ONLINE"] : L["LOKAL"])
+                    </span>
+                    <button type="button" class="btn btn-sm j-test"
+                            data-key="@r.Key" data-url="@Url.Action("Test", "Settings")">@L["Ulanishni tekshirish"]</button>
+                </div>
+                <div class="test-out"></div>
+            </section>
+        }
+    </div>
+
+    <div class="save-bar">
+        <button class="btn-key" type="submit">@L["Barchasini saqlash"]</button>
+    </div>
+</form>

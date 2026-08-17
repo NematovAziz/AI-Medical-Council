@@ -1,0 +1,10 @@
+JIGAR FUNKSIYASI PANELI
+Bemor: Bekzod Yusupov
+Olingan sana: 10.08.2026
+
+Ko'rsatkich              Natija    Birlik     Referens
+ALT                      64        U/L        0 - 41
+AST                      52        U/L        0 - 40
+Umumiy bilirubin         22.4      umol/L     3.4 - 20.5
+Amilaza                  74        U/L        28 - 100
+C-reaktiv oqsil          9.6       mg/L       0 - 5

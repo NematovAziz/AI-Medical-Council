@@ -1,0 +1,91 @@
+@model NewEncounterVm
+@{ ViewData["Title"] = "Yangi klinik tashrif"; }
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["Klinik tashriflar"]</div>
+        <h1>@L["Yangi tashrif"]</h1>
+        
+    </div>
+    <a class="btn" asp-action="Details" asp-route-id="@Model.PatientId">@L["Bemor kartasi"]</a>
+</div>
+
+<section class="panel anim d1">
+    <form method="post" asp-action="AddEncounter">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="PatientId" />
+        <div asp-validation-summary="ModelOnly" class="vsum"></div>
+
+        <div class="form-sec first"><b>@L["Tashrif sanasi"]</b></div>
+        <div class="form two">
+            <div class="f">
+                <label>@L["Tashrif sanasi"]</label>
+                <input asp-for="OccurredAt" type="datetime-local" />
+                <small>@L["Eski tahlillarni kiritsangiz, o'sha sanani ko'rsating."]</small>
+                <span asp-validation-for="OccurredAt" class="err"></span>
+            </div>
+        </div>
+
+        <div class="form-sec"><b>@L["Shikoyat va anamnez"]</b></div>
+        <div class="form two">
+            <div class="f">
+                <label>@L["SIMPTOMLAR"] *</label>
+                <textarea asp-for="Symptoms" placeholder="Masalan: ko'krak og'rig'i, hansirash, bosh aylanish"></textarea>
+                <span asp-validation-for="Symptoms" class="err"></span>
+            </div>
+            <div class="f">
+                <label>@L["Anamnez"]</label>
+                <textarea asp-for="Anamnesis" placeholder="Kasallik boshlanishi, davomiyligi, oldingi davolash"></textarea>
+            </div>
+        </div>
+
+        <div class="form-sec"><b>@L["Vital ko'rsatkichlar"]</b></div>
+        <div class="form five">
+            <div class="f"><label>BP sys</label><input asp-for="SystolicBp" type="number" placeholder="120" /><small>mmHg</small></div>
+            <div class="f"><label>BP dia</label><input asp-for="DiastolicBp" type="number" placeholder="80" /><small>mmHg</small></div>
+            <div class="f"><label>HR</label><input asp-for="HeartRate" type="number" placeholder="72" /><small>bpm</small></div>
+            <div class="f"><label>SpO₂</label><input asp-for="SpO2" type="number" step="0.1" placeholder="98" /><small>%</small></div>
+            <div class="f"><label>Hb</label><input asp-for="Hemoglobin" type="number" step="0.1" placeholder="135" /><small>g/L</small></div>
+        </div>
+
+        <div class="form five" style="margin-top:16px">
+            <div class="f"><label>T°</label><input asp-for="Temperature" type="number" step="0.1" placeholder="36.6" /><small>°C</small></div>
+            <div class="f"><label>RR</label><input asp-for="RespiratoryRate" type="number" placeholder="16" /><small>1/daqiqa</small></div>
+            <div class="f"><label>cm</label><input asp-for="HeightCm" type="number" step="0.5" placeholder="172" /><small>sm</small></div>
+            <div class="f"><label>kg</label><input asp-for="WeightKg" type="number" step="0.1" placeholder="78" /><small>kg</small></div>
+            <div class="f"><label>NRS 0-10</label><input asp-for="PainScore" type="number" min="0" max="10" placeholder="0" /></div>
+        </div>
+
+        <div class="form three" style="margin-top:16px">
+            <div class="f"><label>Glu</label><input asp-for="Glucose" type="number" step="0.1" placeholder="5.2" /><small>mmol/L</small></div>
+            <div class="f"><label>EKG</label><input asp-for="EcgSummary" placeholder="Sinus ritmi" /></div>
+            <div class="f"><label>Imaging</label><input asp-for="ImagingSummary" placeholder="Ko'krak qafasi rentgeni: ..." /></div>
+        </div>
+
+        <div class="form-sec"><b>@L["Qo'shimcha"]</b></div>
+        <div class="form three">
+            <div class="f">
+                <label>@L["Triaj"]</label>
+                <select asp-for="Triage">
+                    <option value="Yashil">@L["Yashil"]</option>
+                    <option value="Sariq">@L["Sariq"]</option>
+                    <option value="Qizil">@L["Qizil"]</option>
+                </select>
+            </div>
+            <div class="f">
+                <label>ICD-10</label>
+                <input asp-for="Icd10" placeholder="I10, E11.9, D50.9 ..." />
+                
+            </div>
+            <div class="f">
+                <label>@L["Izoh"]</label>
+                <textarea asp-for="Notes" placeholder="Ichki eslatma"></textarea>
+            </div>
+        </div>
+
+        <div class="form-foot">
+            <a class="btn-ghost" asp-action="Details" asp-route-id="@Model.PatientId">@L["Bekor qilish"]</a>
+            <button class="btn-key" type="submit">@L["Saqlash va konsiliumni boshlash"]</button>
+        </div>
+    </form>
+</section>

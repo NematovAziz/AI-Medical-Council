@@ -1,0 +1,113 @@
+@using System.Globalization
+@using System.Text.Json
+@model PatientTimelineVm
+@{
+    ViewData["Title"] = $"{Model.Patient.FullName} · Timeline";
+
+    var pts = Model.Trend.Where(t => t.SystolicBp.HasValue || t.Hemoglobin.HasValue || t.Glucose.HasValue).ToList();
+
+    var series = new List<SeriesVm>();
+    if (pts.Any(t => t.SystolicBp.HasValue))
+        series.Add(new SeriesVm("Sistolik BP", "#D22D4B", pts.Select(t => (double)(t.SystolicBp ?? 0)).ToArray()));
+    if (pts.Any(t => t.Hemoglobin.HasValue))
+        series.Add(new SeriesVm("Gemoglobin", "#0C93A8", pts.Select(t => t.Hemoglobin ?? 0).ToArray()));
+    if (pts.Any(t => t.HeartRate.HasValue))
+        series.Add(new SeriesVm("YUT", "#5B62D6", pts.Select(t => (double)(t.HeartRate ?? 0)).ToArray()));
+
+    var seriesJson = JsonSerializer.Serialize(series);
+
+    var gluSeries = pts.Any(t => t.Glucose.HasValue)
+        ? JsonSerializer.Serialize(new[] { new SeriesVm("Glyukoza", "#B87503", pts.Select(t => t.Glucose ?? 0).ToArray()) })
+        : null;
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["Timeline"]</div>
+        <h1>@Model.Patient.FullName</h1>
+        
+    </div>
+    <div class="head-actions">
+        <a class="btn" asp-action="Details" asp-route-id="@Model.Patient.Id">@L["Bemor kartasi"]</a>
+        <a class="btn-key" asp-action="AddEncounter" asp-route-id="@Model.Patient.Id">+ @L["Yangi tashrif"]</a>
+    </div>
+</div>
+
+@if (series.Any())
+{
+    <div class="cols-3" style="margin-bottom:14px">
+        <section class="panel" style="grid-column:span 2">
+            <div class="ph compact"><div><h2>BP · Hb · HR</h2></div></div>
+            <svg class="trend" data-series="@seriesJson" aria-label="Ko'rsatkichlar dinamikasi"></svg>
+            <div class="legend">
+                @foreach (var s in series)
+                {
+                    <span><i style="background:@s.Color"></i>@s.Label</span>
+                }
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="ph compact"><div><h2>Glu · mmol/L</h2></div></div>
+            @if (gluSeries is null)
+            {
+                <div class="empty">@L["Ma'lumot yo'q"]</div>
+            }
+            else
+            {
+                <svg class="trend" data-series="@gluSeries" aria-label="Glyukoza dinamikasi"></svg>
+                <div class="legend"><span><i style="background:#B87503"></i>Glyukoza</span></div>
+            }
+        </section>
+    </div>
+}
+
+<section class="panel">
+    <div class="ph">
+        <div><h2>@L["Timeline"]</h2><p>@Model.Items.Count</p></div>
+    </div>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="empty"><b>@L["Yozuvlar topilmadi"]</b></div>
+    }
+    else
+    {
+        <div class="tl">
+            @foreach (var item in Model.Items)
+            {
+                <div class="tli">
+                    <div class="tlm @(item.Status == "critical" ? "critical" : item.Status == "ai" ? "ai" : "")">
+                        @(item.Type == "AI Council" ? "AI" : "◍")
+                    </div>
+                    <div class="tlc">
+                        <div class="m">
+                            <span>@(item.Type == "AI Council" ? L["AI konsilium"] : L["Klinik tashriflar"])</span>
+                            <time>@item.DateUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture)</time>
+                        </div>
+                        <h3>@item.Title</h3>
+                        <p>@item.Description</p>
+                        @if (item.Vitals.Any())
+                        {
+                            <div class="tl-vitals">
+                                @foreach (var v in item.Vitals)
+                                {
+                                    <span class="@(item.CriticalVitals.Contains(v) ? "hot" : "")">@v</span>
+                                }
+                            </div>
+                        }
+                        @if (item.Type == "AI Council" && item.RelatedId.HasValue)
+                        {
+                            <a class="btn btn-sm" style="margin-top:10px" asp-controller="Council" asp-action="Result" asp-route-id="@item.RelatedId">@L["Hisobot"]</a>
+                        }
+                        else if (item.RelatedId.HasValue)
+                        {
+                            <a class="btn btn-sm" style="margin-top:10px" asp-controller="Council" asp-action="Live"
+                               asp-route-patientId="@Model.Patient.Id" asp-route-encounterId="@item.RelatedId">@L["Konsilium"]</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>

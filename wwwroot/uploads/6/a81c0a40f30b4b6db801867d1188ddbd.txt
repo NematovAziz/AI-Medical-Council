@@ -1,0 +1,14 @@
+KLINIK LABORATORIYA
+Bemor: Aziza Rahimova
+Jinsi: Ayol
+Olingan sana: 12.08.2026
+Tahlil: Umumiy qon tahlili
+
+Ko'rsatkich              Natija     Birlik      Referens
+Gemoglobin               116        g/L         120 - 160
+Eritrotsitlar            4.1        10^12/L     3.8 - 5.6
+Leykotsitlar             6.2        10^9/L      4.0 - 9.0
+Trombotsitlar            274        10^9/L      150 - 400
+EChT                     14         mm/soat     2 - 20
+
+Laborant: N. Yusupova

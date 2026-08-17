@@ -1,0 +1,74 @@
+@model CouncilIndexVm
+@{
+    ViewData["Title"] = "AI konsilium arxivi";
+    string RiskTag(string level) => level switch { "Kritik" => "c", "Yuqori" => "w", "O'rta" => "w", _ => "ok" };
+    string Initials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2 ? $"{parts[0][0]}{parts[1][0]}".ToUpper() : name[..Math.Min(2, name.Length)].ToUpper();
+    }
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["AI konsilium"]</div>
+        <h1>@L["Konsilium arxivi"]</h1>
+        <p>@L["Barcha o'tkazilgan sessiyalar va ularning xavf darajasi."]</p>
+    </div>
+</div>
+
+<form method="get" class="filters">
+    <input name="q" value="@Model.Query" placeholder="@L["Qidirish"]" />
+    <select name="risk">
+        <option value="">@L["Barcha darajalar"]</option>
+        @foreach (var level in new[] { "Kritik", "Yuqori", "O'rta", "Past" })
+        {
+            if (Model.Risk == level)
+            {
+                <option value="@level" selected>@L[level]</option>
+            }
+            else
+            {
+                <option value="@level">@L[level]</option>
+            }
+        }
+    </select>
+    <button class="btn" type="submit">@L["Qidirish"]</button>
+</form>
+
+<section class="panel anim d2">
+    @if (!Model.Rows.Any())
+    {
+        <div class="empty">
+            <b>@L["Sessiyalar yo'q"]</b>
+        </div>
+    }
+    else
+    {
+        <div class="tw">
+            <table>
+                <thead>
+                <tr><th>@L["BEMOR"]</th><th>@L["ASOSIY GIPOTEZA"]</th><th>@L["RISK"]</th><th>@L["KONSENSUS"]</th><th>@L["TAHLIL SANASI"]</th><th>@L["SANA"]</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    <tr onclick="location.href='@Url.Action("Result", new { id = r.Id })'" style="cursor:pointer">
+                        <td>
+                            <div class="pt">
+                                <div class="av">@Initials(r.PatientName)</div>
+                                <div><b>@r.PatientName</b><span>Sessiya #@r.Id</span></div>
+                            </div>
+                        </td>
+                        <td class="dim" style="max-width:420px">@r.MainHypothesis</td>
+                        <td><span class="tag @RiskTag(r.RiskLevel)">@L[r.RiskLevel].ToUpper() · @r.RiskScore</span></td>
+                        <td class="mono dim">@r.ConsensusScore%</td>
+                        <td class="mono">@r.EncounterDateUtc.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                        <td class="mono faint">@r.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

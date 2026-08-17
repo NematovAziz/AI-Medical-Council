@@ -1,0 +1,21 @@
+"SHIFO" KLINIK LABORATORIYASI
+Toshkent sh., Chilonzor tumani
+
+Bemor: Sardor Karimov
+Tug'ilgan sana: 09.02.1957
+Yo'llanma: Kardiologiya bo'limi
+Olingan sana: 17.08.2026
+Tahlil turi: Umumiy qon tahlili
+
+--------------------------------------------------------
+Ko'rsatkich            Natija    Birlik      Referens
+--------------------------------------------------------
+Gemoglobin             104       g/L         120 - 160
+Eritrotsitlar          3.6       10^12/L     3.8 - 5.6
+Leykotsitlar           14.2      10^9/L      4.0 - 9.0
+Trombotsitlar          188       10^9/L      150 - 400
+EChT                   34        mm/soat     2 - 20
+--------------------------------------------------------
+
+Laborant: N. Yusupova
+Izoh: namuna sifatida tayyorlangan hujjat.

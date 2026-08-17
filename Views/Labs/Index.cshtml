@@ -1,0 +1,114 @@
+@model LabsIndexVm
+@{
+    ViewData["Title"] = $"{Model.Patient.FullName} · Analizlar";
+    string FlagTag(string f) => f switch { "C" => "c", "H" => "w", "L" => "i", _ => "ok" };
+    string StatusTag(string s) => s switch { "Tayyor" => "ok", "Xatolik" => "c", "Tahlil qilinmoqda" => "i", _ => "off" };
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["LABORATORIYA"]</div>
+        <h1>@L["Analizlar"]</h1>
+        <p>
+            @Model.Patient.FullName — @L["AI hujjatni o'zi o'qib, ko'rsatkichlarni bazaga yozadi."]
+        </p>
+    </div>
+    <div class="head-actions">
+        <a class="btn" asp-controller="Patients" asp-action="Details" asp-route-id="@Model.Patient.Id">@L["Bemor kartasi"]</a>
+        <a class="btn" asp-controller="Patients" asp-action="Timeline" asp-route-id="@Model.Patient.Id">@L["Timeline"]</a>
+    </div>
+</div>
+
+<section class="panel anim d1">
+    <div class="ph">
+        <div><h2>@L["Faylni yuklash"]</h2><p>PDF · PNG · JPG · TXT · CSV</p></div>
+        <span class="tag i">AI</span>
+    </div>
+
+    <div class="drop"
+         data-url="@Url.Action("Upload", "Labs")"
+         data-patient="@Model.Patient.Id"
+         role="button" tabindex="0"
+         aria-label="Analiz faylini yuklash">
+        <span class="drop-icon">⇪</span>
+        <b>@L["Faylni shu yerga tashlang"]</b>
+        <p>@L["yoki bosing va kompyuterdan tanlang"]</p>
+        <small>15 MB</small>
+        <input type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.csv,.json" />
+        <div class="dz-progress"><i></i></div>
+        <div class="dz-stage"></div>
+    </div>
+</section>
+
+<div class="cols" style="margin-top:16px">
+    <section class="panel reveal">
+        <div class="ph">
+            <div><h2>@L["Yuklangan hujjatlar"]</h2></div>
+        </div>
+
+        @if (!Model.Documents.Any())
+        {
+            <div class="empty"><b>@L["Hujjatlar yo'q"]</b></div>
+        }
+        else
+        {
+            <div class="tw">
+                <table>
+                    <thead>
+                    <tr><th>@L["FAYL"]</th><th>@L["Olingan sana"]</th><th>@L["KO'RSATKICH"]</th><th>@L["ME'YORDAN CHETDA"]</th><th>@L["MANBA"]</th><th>@L["HOLAT"]</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var d in Model.Documents)
+                    {
+                        <tr onclick="location.href='@Url.Action("Document", new { id = d.Id })'" style="cursor:pointer">
+                            <td><b>@d.FileName</b><div class="faint">@(d.SizeBytes / 1024) KB</div></td>
+                            <td class="mono">@d.CollectedAtUtc.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td class="mono">@d.ExtractedCount</td>
+                            <td>
+                                @if (d.AbnormalCount > 0)
+                                {
+                                    <span class="tag w">@d.AbnormalCount</span>
+                                }
+                                else
+                                {
+                                    <span class="tag ok">0</span>
+                                }
+                            </td>
+                            <td class="faint">@d.ExtractionSource</td>
+                            <td><span class="tag @StatusTag(d.Status)">@d.Status.ToUpper()</span></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="panel reveal">
+        <div class="ph"><div><h2>@L["So'nggi ko'rsatkichlar"]</h2></div></div>
+
+        @if (!Model.RecentResults.Any())
+        {
+            <div class="empty">@L["Ma'lumot yo'q"]</div>
+        }
+        else
+        {
+            <div class="tw">
+                <table>
+                    <thead><tr><th>@L["KO'RSATKICH"]</th><th>@L["QIYMAT"]</th><th>@L["REFERENS"]</th><th></th></tr></thead>
+                    <tbody>
+                    @foreach (var r in Model.RecentResults.Take(18))
+                    {
+                        <tr>
+                            <td>@r.Analyte<div class="faint">@r.ObservedAtUtc.ToLocalTime().ToString("dd.MM.yyyy")</div></td>
+                            <td class="mono"><b>@r.Value</b> <span class="faint">@r.Unit</span></td>
+                            <td class="faint mono">@(r.RefLow?.ToString() ?? "—") – @(r.RefHigh?.ToString() ?? "—")</td>
+                            <td><span class="flag @r.Flag">@r.Flag</span></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

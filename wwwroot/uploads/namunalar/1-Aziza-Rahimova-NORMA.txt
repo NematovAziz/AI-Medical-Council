@@ -1,0 +1,30 @@
+"SHIFO" KLINIK LABORATORIYASI
+Toshkent sh., Chilonzor tumani, 12-uy
+
+Bemor: Aziza Rahimova
+Tug'ilgan sana: 03.04.1992
+Jinsi: Ayol
+Yo'llanma: Profilaktik ko'rik
+Olingan sana: 12.08.2026
+Tahlil turi: Umumiy qon va biokimyoviy tahlil
+
+------------------------------------------------------------
+Ko'rsatkich              Natija     Birlik      Referens
+------------------------------------------------------------
+Gemoglobin               132        g/L         120 - 160
+Eritrotsitlar            4.5        10^12/L     3.8 - 5.6
+Leykotsitlar             6.1        10^9/L      4.0 - 9.0
+Trombotsitlar            268        10^9/L      150 - 400
+EChT                     8          mm/soat     2 - 20
+Glyukoza                 5.0        mmol/L      3.9 - 6.1
+Umumiy xolesterin        4.4        mmol/L      3.0 - 5.2
+Kreatinin                74         umol/L      62 - 106
+ALT                      19         U/L         0 - 41
+AST                      21         U/L         0 - 40
+C-reaktiv oqsil          1.8        mg/L        0 - 5
+Ferritin                 68         ng/mL       30 - 300
+TSH                      2.1        mIU/L       0.4 - 4.0
+------------------------------------------------------------
+
+Xulosa: barcha ko'rsatkichlar referens oralig'ida.
+Laborant: N. Yusupova

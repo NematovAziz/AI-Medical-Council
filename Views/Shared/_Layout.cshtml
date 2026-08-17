@@ -1,0 +1,89 @@
+@{
+    var ctrl = (ViewContext.RouteData.Values["controller"] ?? "Home").ToString();
+    var act = (ViewContext.RouteData.Values["action"] ?? "Index").ToString();
+    string On(string c, string? a = null) => ctrl == c && (a is null || act == a) ? "on" : "";
+    var back = ViewContext.HttpContext.Request.Path + ViewContext.HttpContext.Request.QueryString;
+}
+<!DOCTYPE html>
+<html lang="@(L.Lang == "ru" ? "ru" : "uz")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#EEF4FC" />
+    <title>@ViewData["Title"] · AI MEDICAL COUNCIL</title>
+    <link rel="icon" href="~/img/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<div class="page-fx"><span></span><span></span><span></span></div>
+
+<div class="shell">
+    <aside class="side">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <partial name="_Logo" />
+            <div>
+                <b>AI MEDICAL COUNCIL</b>
+                <span>@L["Clinical Intelligence Platform"]</span>
+            </div>
+        </a>
+        <div class="brand-sub">@L["Klinik qarorlarni qo'llab-quvvatlash tizimi"]</div>
+
+        <div class="cap">@L["KLINIK BOSHQARUV"]</div>
+        <nav class="nav">
+            <a class="@On("Home")" asp-controller="Home" asp-action="Index"><span class="ic">▤</span> @L["Dashboard"]</a>
+            <a class="@On("Patients", "Index")" asp-controller="Patients" asp-action="Index"><span class="ic">◍</span> @L["Bemorlar"]</a>
+            <a class="@On("Council", "Index")" asp-controller="Council" asp-action="Index"><span class="ic">◈</span> @L["AI konsilium"]</a>
+            <a class="@On("Patients", "Create")" asp-controller="Patients" asp-action="Create"><span class="ic">＋</span> @L["Yangi bemor"]</a>
+        </nav>
+
+        <div class="cap">@L["TIZIM"]</div>
+        <nav class="nav">
+            <a class="@On("Settings")" asp-controller="Settings" asp-action="AiAgents"><span class="ic">⬡</span> @L["AI agentlar"]</a>
+        </nav>
+
+        <div class="side-foot">
+            <span class="pulse"></span>@L["Tizim ishlamoqda"]
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="top">
+            <div class="brandline">
+                <div class="tt">AI MEDICAL COUNCIL</div>
+                <div class="ts">@L["Clinical Intelligence Platform"]</div>
+            </div>
+
+            <svg class="ecg" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0,20 H68 l8,-3 l6,7 l7,-23 l7,33 l7,-14 H150 l8,-3 l6,7 l7,-23 l7,33 l7,-14
+                         H240 l8,-3 l6,7 l7,-23 l7,33 l7,-14 H340 l8,-3 l6,7 l7,-23 l7,33 l7,-14
+                         H440 l8,-3 l6,7 l7,-23 l7,33 l7,-14 H600" />
+            </svg>
+
+            <div class="lang" role="group" aria-label="@L["Til"]">
+                <a class="@(L.Lang == "uz-Latn" ? "on" : "")" asp-controller="Settings" asp-action="Language"
+                   asp-route-lang="uz-Latn" asp-route-returnUrl="@back">UZ</a>
+                <a class="@(L.Lang == "uz-Cyrl" ? "on" : "")" asp-controller="Settings" asp-action="Language"
+                   asp-route-lang="uz-Cyrl" asp-route-returnUrl="@back">ЎЗ</a>
+                <a class="@(L.Lang == "ru" ? "on" : "")" asp-controller="Settings" asp-action="Language"
+                   asp-route-lang="ru" asp-route-returnUrl="@back">РУ</a>
+            </div>
+
+            <div class="who">
+                <div class="av">DR</div>
+                <div>
+                    <b>@L["Shifokor"]</b>
+                    <span>@L["Mutaxassis"]</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="wrap">
+            @RenderBody()
+        </main>
+    </div>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

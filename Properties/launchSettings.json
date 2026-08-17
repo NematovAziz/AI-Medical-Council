@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "AI.MedicalCouncil": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54404;http://localhost:54405"
+    }
+  }
+}

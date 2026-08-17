@@ -1,0 +1,124 @@
+@model CouncilResultVm
+@{
+    ViewData["Title"] = "Konsilium natijasi";
+    var s = Model.Session;
+    string RiskTag(string level) => level switch { "Kritik" => "c", "Yuqori" => "w", "O'rta" => "w", _ => "ok" };
+    string SevClass(AiAgentFinding f) => !f.Available ? "sev-off"
+        : f.Severity switch { "Critical" => "sev-c", "Warning" => "sev-w", _ => "" };
+    string SevLabel(string sev) => sev switch { "Critical" => "KRITIK", "Warning" => "OGOHLANTIRISH", _ => "AXBOROT" };
+    var round1 = s.Findings.Where(f => f.Round == 1).OrderByDescending(f => f.Confidence).ToList();
+    var round2 = s.Findings.Where(f => f.Round == 2).OrderByDescending(f => f.Confidence).ToList();
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["AI konsilium"] · #@s.Id</div>
+        <h1>@Model.Patient.FullName</h1>
+        <p>
+            Tahlil sanasi: <b class="mono">@s.EncounterDateUtc.ToLocalTime().ToString("dd.MM.yyyy")</b> ·
+            konsilium o'tkazilgan: @s.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ·
+            @s.Findings.Count agent · @s.DurationMs ms · @s.EngineVersion
+        </p>
+    </div>
+    <div class="head-actions">
+        <a class="btn" asp-controller="Patients" asp-action="Timeline" asp-route-id="@Model.Patient.Id">@L["Timeline"]</a>
+        <a class="btn" asp-controller="Council" asp-action="Print" asp-route-id="@s.Id" target="_blank">@L["Hisobot"]</a>
+        <a class="btn-key" asp-controller="Patients" asp-action="AddEncounter" asp-route-id="@Model.Patient.Id">@L["Yangi tashrif"]</a>
+    </div>
+</div>
+
+<div class="hero anim d1">
+    <section class="panel risk">
+        <partial name="_RiskRing" model="@s.RiskScore" />
+        <div style="margin-top:6px"><span class="tag @RiskTag(s.RiskLevel)">@L[s.RiskLevel].ToUpper()</span></div>
+        <p>@L["KONSENSUS"] @s.ConsensusScore%</p>
+    </section>
+
+    <section class="panel">
+        <div class="ph compact"><div><h2>@L["Asosiy gipoteza"]</h2></div></div>
+        <h2 class="serif" style="font-family:var(--serif);font-size:20px;font-weight:500;line-height:1.45;margin:10px 0">@s.MainHypothesis</h2>
+        <div class="hyp-sum">@s.Summary</div>
+    </section>
+
+    <section class="panel flags">
+        <div class="ph compact"><div><h2>@L["Qizil bayroqlar"]</h2></div></div>
+        <div class="note @(s.RiskLevel == "Kritik" ? "c" : s.RiskLevel == "Past" ? "" : "w")">
+            <b>@(s.RiskLevel == "Kritik" ? L["Shoshilinch e'tibor"] : L["HOLAT"])</b>
+            @s.RedFlags
+        </div>
+        
+    </section>
+</div>
+
+<div class="cols reveal">
+    <div class="stack">
+        <section class="panel">
+            <div class="ph">
+                <div><h2>1 · @L["Mustaqil tahlil"]</h2></div>
+                <span class="tag i">@round1.Count</span>
+            </div>
+            <div class="agents">
+                @foreach (var f in round1)
+                {
+                    <div class="ag done @SevClass(f)">
+                        <div class="n"><span>@f.AgentName</span><em>@(f.Available ? f.Confidence + "%" : "—")</em></div>
+                        <div class="bar"><i style="width:@(f.Confidence)%"></i></div>
+                        <span class="s">@(f.Available ? SevLabel(f.Severity) + " · " + f.Source : "ULANMADI · " + f.Source)</span>
+                        <div class="txt">@f.Finding</div>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="ph">
+                <div><h2>2 · @L["O'zaro nazorat"]</h2></div>
+                <span class="tag i">@round2.Count</span>
+            </div>
+            <div class="agents">
+                @foreach (var f in round2)
+                {
+                    <div class="ag done @SevClass(f)">
+                        <div class="n"><span>@f.AgentName</span><em>@(f.Available ? f.Confidence + "%" : "—")</em></div>
+                        <div class="bar"><i style="width:@(f.Confidence)%"></i></div>
+                        <span class="s">@(f.Available ? SevLabel(f.Severity) + " · " + f.Source : "ULANMADI · " + f.Source)</span>
+                        <div class="txt">@f.Finding</div>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+
+    <div class="stack">
+        <section class="panel">
+            <div class="ph compact"><div><h2>@L["Alternativ gipotezalar"]</h2></div></div>
+            <p class="dim" style="font-size:11.5px;line-height:1.75;margin:0">@s.AlternativeHypotheses</p>
+        </section>
+
+        <section class="panel">
+            <div class="ph compact"><div><h2>@L["Tavsiya etilgan tekshiruvlar"]</h2></div></div>
+            <p class="dim" style="font-size:11.5px;line-height:1.75;margin:0">@s.RecommendedTests</p>
+        </section>
+
+        <section class="panel">
+            <div class="ph compact"><div><h2>@L["Tashrif ma'lumotlari"]</h2></div></div>
+            <dl class="dl">
+                <div><dt>@L["SIMPTOMLAR"]</dt><dd>@Model.Encounter.Symptoms</dd></div>
+                <div><dt>BP</dt><dd class="mono">@(Model.Encounter.SystolicBp?.ToString() ?? "—")/@(Model.Encounter.DiastolicBp?.ToString() ?? "—")</dd></div>
+                <div><dt>YUT</dt><dd class="mono">@(Model.Encounter.HeartRate?.ToString() ?? "—")</dd></div>
+                <div><dt>SpO₂</dt><dd class="mono">@(Model.Encounter.SpO2?.ToString() ?? "—")</dd></div>
+                <div><dt>Hb</dt><dd class="mono">@(Model.Encounter.Hemoglobin?.ToString() ?? "—")</dd></div>
+                <div><dt>GLYUKOZA</dt><dd class="mono">@(Model.Encounter.Glucose?.ToString() ?? "—")</dd></div>
+                <div><dt>EKG</dt><dd>@(string.IsNullOrWhiteSpace(Model.Encounter.EcgSummary) ? "—" : Model.Encounter.EcgSummary)</dd></div>
+            </dl>
+        </section>
+    </div>
+</div>
+
+<div class="banner">
+    <div class="bi">⚕</div>
+    <div>
+        <b>@L["Yakuniy qaror shifokorga tegishli"]</b>
+        <span>@L["Bu hisobot AI qoralamasi. Tashxis va davolash rejasini shifokor tasdiqlaydi."]</span>
+    </div>
+</div>

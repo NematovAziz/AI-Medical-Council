@@ -1,0 +1,52 @@
+TURLI XIL ANALIZLAR — 3 BEMOR UCHUN
+AI MEDICAL COUNCIL · Clinical Intelligence Platform
+
+Har bir bemor uchun 3 xil panel. Fayllarni "Analizlar" sahifasidagi
+drag & drop maydoniga tashlang.
+
+=================================================================
+1. AZIZA RAHIMOVA — 34 yosh, ayol
+   Klinik ko'rinish: temir tanqisligi anemiyasi
+-----------------------------------------------------------------
+1A-Aziza-umumiy-qon.txt          TXT   5 ta,  1 chetda
+     Gemoglobin 116 (past)
+1B-Aziza-temir-almashinuvi.csv   CSV   5 ta,  3 chetda
+     Ferritin 11, Temir 6.4, Transferrin 3.9
+1C-Aziza-qalqonsimon-bez.txt     TXT   4 ta,  1 chetda
+     Vitamin D 22 (past), qalqonsimon bez normada
+   Kutilayotgan xulosa: PAST-O'RTA xavf, anemiya sababini qidirish
+
+=================================================================
+2. BEKZOD YUSUPOV — 57 yosh, erkak
+   Klinik ko'rinish: 2-tip diabet, metabolik sindrom
+-----------------------------------------------------------------
+2A-Bekzod-biokimyo.csv           CSV   7 ta,  5 chetda
+     Glyukoza 9.4, HbA1c 8.9, Kreatinin 121, Siydik kislotasi 468
+2B-Bekzod-lipid-profil.txt       TXT   4 ta,  4 chetda
+     LDL 4.6, HDL 0.9, Triglitseridlar 2.9
+2C-Bekzod-jigar-paneli.txt       TXT   5 ta,  4 chetda
+     ALT 64, AST 52, Bilirubin 22.4, CRP 9.6
+   Kutilayotgan xulosa: O'RTA-YUQORI xavf, kritik emas
+
+=================================================================
+3. SARDOR KARIMOV — 69 yosh, erkak
+   Klinik ko'rinish: o'tkir koronar sindrom
+-----------------------------------------------------------------
+3A-Sardor-kardiomarkerlar.pdf    PDF  10 ta,  1 kritik
+     Troponin I 142, KFK-MB 68, LDG 412
+3B-Sardor-koagulogramma.txt      TXT   4 ta,  1 kritik
+     D-dimer 3800, INR 1.6, APTV 46, Fibrinogen 5.8
+3C-Sardor-elektrolitlar.csv      CSV   5 ta,  2 kritik
+     Kaliy 2.4, Glyukoza 12.4, Natriy 133
+   Kutilayotgan xulosa: KRITIK xavf, Safety Agent eskalatsiya qiladi
+
+=================================================================
+DEMO TARTIBI
+Bemorlarni shu ketma-ketlikda ko'rsating: Aziza -> Bekzod -> Sardor.
+Har bir bemorda 3 ta faylni birin-ketin yuklang — tizim bitta
+bemorning turli panellarini qanday to'playotgani ko'rinadi.
+
+MUHIM
+CSV ajratuvchisi nuqtali vergul (;) bo'lishi shart.
+PDF matn qatlamiga ega, kalitisiz ham o'qiladi.
+Skaner rasm uchun LabExtractor kaliti (Gemini) kerak.

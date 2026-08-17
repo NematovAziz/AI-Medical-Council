@@ -1,0 +1,71 @@
+@model CouncilResultVm
+@{
+    ViewData["Title"] = "Klinik hisobot";
+    var s = Model.Session;
+}
+
+<div class="head">
+    <div>
+        <div class="eyebrow">CLINICAL REPORT · #@s.Id</div>
+        <h1>@L["Klinik hisobot"]</h1>
+        <p>@Model.Patient.FullName · @Model.Patient.BirthDate.ToString("dd.MM.yyyy") · @Model.Patient.Sex</p>
+    </div>
+    <div class="head-actions no-print">
+        <button class="btn-key" onclick="window.print()">@L["Chop etish"]</button>
+    </div>
+</div>
+
+<section class="panel">
+    <dl class="dl">
+        <div><dt>@L["TAHLIL SANASI"]</dt><dd>@s.EncounterDateUtc.ToLocalTime().ToString("dd.MM.yyyy")</dd></div>
+        <div><dt>@L["Konsilium o'tkazilgan"]</dt><dd>@s.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</dd></div>
+        <div><dt>@L["RISK"]</dt><dd>@s.RiskScore/100 · @s.RiskLevel</dd></div>
+        <div><dt>@L["KONSENSUS"]</dt><dd>@s.ConsensusScore%</dd></div>
+        <div><dt>MOTOR</dt><dd>@s.EngineVersion · @s.DurationMs ms</dd></div>
+        <div><dt>STATUS</dt><dd>@s.Status</dd></div>
+    </dl>
+</section>
+
+<section class="panel" style="margin-top:14px">
+    <div class="ph"><div><h2>@L["Asosiy gipoteza"]</h2></div></div>
+    <p class="dim" style="font-size:12px;line-height:1.75">@s.MainHypothesis</p>
+
+    <div class="ph" style="margin-top:16px"><div><h2>@L["Alternativ gipotezalar"]</h2></div></div>
+    <p class="dim" style="font-size:12px;line-height:1.75">@s.AlternativeHypotheses</p>
+
+    <div class="ph" style="margin-top:16px"><div><h2>@L["Tavsiya etilgan tekshiruvlar"]</h2></div></div>
+    <p class="dim" style="font-size:12px;line-height:1.75">@s.RecommendedTests</p>
+
+    <div class="ph" style="margin-top:16px"><div><h2>@L["Qizil bayroqlar"]</h2></div></div>
+    <p class="dim" style="font-size:12px;line-height:1.75">@s.RedFlags</p>
+</section>
+
+<section class="panel" style="margin-top:14px">
+    <div class="ph"><div><h2>@L["Agent xulosalari"]</h2></div></div>
+    <div class="tw">
+        <table>
+            <thead><tr><th>@L["AGENT"]</th><th>@L["RAUND"]</th><th>@L["XULOSA"]</th><th>@L["DARAJA"]</th><th>@L["ISHONCH"]</th><th>@L["MANBA"]</th></tr></thead>
+            <tbody>
+            @foreach (var f in s.Findings.OrderBy(x => x.Round).ThenByDescending(x => x.Confidence))
+            {
+                <tr>
+                    <td><b>@f.AgentName</b></td>
+                    <td class="mono faint">@f.Round</td>
+                    <td class="dim">@f.Finding</td>
+                    <td class="mono">@f.Severity</td>
+                    <td class="mono">@f.Confidence%</td>
+                    <td class="mono faint" style="font-size:10px">@f.Source</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="banner">
+    <div class="bi">⚕</div>
+    <div>
+        <b>Shifokor tasdig'i</b>
+        <span>Hisobot AI qoralamasi sifatida tayyorlangan. Imzo va yakuniy klinik qaror ______________________</span>
+    </div>
+</div>

@@ -1,0 +1,155 @@
+@model DashboardVm
+@{
+    ViewData["Title"] = "Clinical Dashboard";
+    string RiskClass(string level) => level switch
+    {
+        "Kritik" => "c",
+        "Yuqori" => "w",
+        "O'rta" => "w",
+        _ => "ok"
+    };
+    string Initials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2 ? $"{parts[0][0]}{parts[1][0]}".ToUpper() : name[..Math.Min(2, name.Length)].ToUpper();
+    }
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["OPERATSION MARKAZ"]</div>
+        <h1>@L["Klinik boshqaruv paneli"]</h1>
+        <p>@L["Bemorlar, klinik tarix va AI konsilium — bitta ish maydonida."]</p>
+    </div>
+    <div class="head-actions">
+        <a class="btn" asp-controller="Council" asp-action="Index">@L["Konsilium arxivi"]</a>
+        <a class="btn-key" asp-controller="Patients" asp-action="Create">+ @L["Yangi bemor"]</a>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat anim d1">
+        <div class="k">@L["BEMORLAR"]</div>
+        <div class="v" data-count="@Model.TotalPatients">0</div>
+        <div class="d">@L["Ro'yxatdagi jami"]</div>
+    </div>
+    <div class="stat v-ok anim d2">
+        <div class="k">@L["TASHRIFLAR"]</div>
+        <div class="v" data-count="@Model.TotalEncounters">0</div>
+        <div class="d">@L["Klinik yozuvlar"]</div>
+    </div>
+    <div class="stat v-violet anim d3">
+        <div class="k">@L["KONSILIUMLAR"]</div>
+        <div class="v" data-count="@Model.TotalCouncilSessions">0</div>
+        <div class="d">@L["O'rtacha risk"] @Model.AverageRisk.ToString("0")/100</div>
+    </div>
+    <div class="stat v-crit anim d4">
+        <div class="k">@L["KRITIK"]</div>
+        <div class="v" data-count="@Model.CriticalCount">0</div>
+        <div class="d">@L["Shoshilinch e'tibor"]</div>
+    </div>
+</div>
+
+<div class="cols reveal">
+    <div class="stack">
+
+        <section class="panel">
+            <div class="ph">
+                <div><h2>@L["So'nggi konsiliumlar"]</h2></div>
+                <a asp-controller="Council" asp-action="Index">@L["Barchasi"] →</a>
+            </div>
+
+            @if (!Model.RecentCouncils.Any())
+            {
+                <div class="empty">
+                    <b>Konsiliumlar hali o'tkazilmagan</b>
+                    Bemor kartasidan yangi tashrif qo'shing — konsilium avtomatik ishga tushadi.
+                </div>
+            }
+            else
+            {
+                <div class="tw">
+                    <table>
+                        <thead>
+                        <tr><th>@L["BEMOR"]</th><th>@L["ASOSIY GIPOTEZA"]</th><th>@L["RISK"]</th><th>@L["SANA"]</th></tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var c in Model.RecentCouncils)
+                        {
+                            <tr onclick="location.href='@Url.Action("Result", "Council", new { id = c.Id })'" style="cursor:pointer">
+                                <td>
+                                    <div class="pt">
+                                        <div class="av">@Initials(c.PatientName)</div>
+                                        <div><b>@c.PatientName</b><span>Sessiya #@c.Id</span></div>
+                                    </div>
+                                </td>
+                                <td class="dim">@c.MainHypothesis</td>
+                                <td><span class="tag @RiskClass(c.RiskLevel)">@L[c.RiskLevel].ToUpper() · @c.RiskScore</span></td>
+                                <td class="faint mono">@c.CreatedAtUtc.ToLocalTime().ToString("dd.MM · HH:mm")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="panel">
+            <div class="ph">
+                <div><h2>@L["So'nggi bemorlar"]</h2></div>
+                <a asp-controller="Patients" asp-action="Index">@L["Barchasi"] →</a>
+            </div>
+
+            @if (!Model.RecentPatients.Any())
+            {
+                <div class="empty"><b>Registr bo'sh</b>Birinchi bemorni qo'shing.</div>
+            }
+            else
+            {
+                <div class="tw">
+                    <table>
+                        <thead><tr><th>@L["BEMOR"]</th><th>@L["JINS"]</th><th>@L["SANA"]</th><th></th></tr></thead>
+                        <tbody>
+                        @foreach (var p in Model.RecentPatients)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="pt">
+                                        <div class="av">@Initials(p.FullName)</div>
+                                        <div><b>@p.FullName</b><span>ID #@p.Id</span></div>
+                                    </div>
+                                </td>
+                                <td class="dim">@p.Sex</td>
+                                <td class="mono faint">@p.BirthDate.ToString("dd.MM.yyyy")</td>
+                                <td style="text-align:right">
+                                    <a class="btn btn-sm" asp-controller="Patients" asp-action="Details" asp-route-id="@p.Id">@L["Karta"]</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="stack">
+        <section class="panel">
+            <div class="ph"><div><h2>@L["Agent tarmog'i"]</h2></div></div>
+            <div class="vit" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+                <div>
+                    <span>@L["Ulangan"]</span>
+                    <b style="color:var(--cyan)">@Model.AgentsOnline/@Model.AgentsTotal</b>
+                    <small></small>
+                </div>
+                <div>
+                    <span>@L["Lokal rejim"]</span>
+                    <b>@(Model.AgentsTotal - Model.AgentsOnline)</b>
+                    <small></small>
+                </div>
+            </div><div style="margin-top:14px">
+                <a class="btn btn-sm" asp-controller="Settings" asp-action="AiAgents">@L["Sozlamalar"]</a>
+            </div>
+        </section>
+    </div>
+</div>

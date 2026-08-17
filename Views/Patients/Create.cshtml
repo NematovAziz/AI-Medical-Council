@@ -1,0 +1,63 @@
+@model Patient
+@{ ViewData["Title"] = "Yangi bemor"; }
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["REGISTR"]</div>
+        <h1>@L["Yangi bemor"]</h1>
+        
+    </div>
+    <a class="btn" asp-action="Index">@L["Bemorlar"]</a>
+</div>
+
+<section class="panel anim d1">
+    <form method="post" asp-action="Create">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="vsum"></div>
+
+        <div class="form-sec first"><b>@L["Shaxsiy ma'lumotlar"]</b></div>
+        <div class="form two">
+            <div class="f">
+                <label>@L["F.I.SH."]</label>
+                <input asp-for="FullName" placeholder="Masalan: Aziza Rahimova" />
+                <span asp-validation-for="FullName" class="err"></span>
+            </div>
+            <div class="f">
+                <label>@L["Tug'ilgan sana"]</label>
+                <input asp-for="BirthDate" type="date" />
+                <span asp-validation-for="BirthDate" class="err"></span>
+            </div>
+            <div class="f">
+                <label>@L["JINS"]</label>
+                <select asp-for="Sex">
+                    <option value="Erkak">@L["Erkak"]</option>
+                    <option value="Ayol">@L["Ayol"]</option>
+                    <option value="Noma'lum">@L["Noma'lum"]</option>
+                </select>
+            </div>
+            <div class="f">
+                <label>@L["Telefon"]</label>
+                <input asp-for="Phone" placeholder="+998 90 000 00 00" />
+            </div>
+        </div>
+
+        <div class="form-sec"><b>@L["Klinik kontekst"]</b></div>
+        <div class="form two">
+            <div class="f">
+                <label>@L["Allergiyalar"]</label>
+                <textarea asp-for="Allergies" placeholder="Masalan: penitsillin, yong'oq"></textarea>
+                
+            </div>
+            <div class="f">
+                <label>@L["Surunkali kasalliklar"]</label>
+                <textarea asp-for="ChronicConditions" placeholder="Masalan: 2-tip qandli diabet, gipertenziya"></textarea>
+                
+            </div>
+        </div>
+
+        <div class="form-foot">
+            <a class="btn-ghost" asp-action="Index">@L["Bekor qilish"]</a>
+            <button class="btn-key" type="submit">@L["Saqlash"]</button>
+        </div>
+    </form>
+</section>

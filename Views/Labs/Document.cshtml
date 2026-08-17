@@ -1,0 +1,104 @@
+@model LabDocumentVm
+@{
+    ViewData["Title"] = Model.Document.FileName;
+    var d = Model.Document;
+    var critical = Model.Results.Count(r => r.Flag == "C");
+    var abnormal = Model.Results.Count(r => r.Flag is "L" or "H");
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["LABORATORIYA"] · #@d.Id</div>
+        <h1>@d.FileName</h1>
+        <p>
+            @Model.Patient.FullName · @d.CollectedAtUtc.ToLocalTime().ToString("dd.MM.yyyy") · @d.ExtractionSource
+        </p>
+    </div>
+    <div class="head-actions">
+        <a class="btn" href="@d.StoredPath" target="_blank">@L["Original fayl"]</a>
+        <a class="btn" asp-action="Index" asp-route-patientId="@Model.Patient.Id">@L["Barcha analizlar"]</a>
+        @if (d.EncounterId.HasValue)
+        {
+            <a class="btn-key" asp-controller="Council" asp-action="Live"
+               asp-route-patientId="@Model.Patient.Id" asp-route-encounterId="@d.EncounterId">@L["Konsilium o'tkazish"]</a>
+        }
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat anim d1">
+        <div class="k">@L["AJRATILGAN"]</div>
+        <div class="v" data-count="@d.ExtractedCount">0</div>
+        <div class="d"></div>
+    </div>
+    <div class="stat v-violet anim d2">
+        <div class="k">@L["ME'YORDAN CHETDA"]</div>
+        <div class="v" data-count="@abnormal">0</div>
+        <div class="d"></div>
+    </div>
+    <div class="stat v-crit anim d3">
+        <div class="k">@L["KRITIK"]</div>
+        <div class="v" data-count="@critical">0</div>
+        <div class="d">@L["Shoshilinch e'tibor"]</div>
+    </div>
+    <div class="stat v-ok anim d4">
+        <div class="k">@L["TAHLIL VAQTI"]</div>
+        <div class="v" data-count="@d.DurationMs">0</div>
+        <div class="d">ms</div>
+    </div>
+</div>
+
+<section class="panel reveal">
+    <div class="ph">
+        <div><h2>@L["Ajratilgan ko'rsatkichlar"]</h2></div>
+        <span class="tag @(critical > 0 ? "c" : abnormal > 0 ? "w" : "ok")">
+            @(critical > 0 ? L["KRITIK"] : abnormal > 0 ? L["ME'YORDAN CHETDA"] : "OK")
+        </span>
+    </div>
+
+    @if (!Model.Results.Any())
+    {
+        <div class="empty">
+            <b>@L["Ma'lumot yo'q"]</b>
+            @d.Summary
+        </div>
+    }
+    else
+    {
+        <div class="tw">
+            <table>
+                <thead>
+                <tr><th>@L["KO'RSATKICH"]</th><th>LOINC</th><th>@L["QIYMAT"]</th><th>@L["BIRLIK"]</th><th>@L["REFERENS"]</th><th></th><th>@L["BAYROQ"]</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var r in Model.Results.OrderBy(x => x.Flag == "N").ThenBy(x => x.Analyte))
+                {
+                    <tr>
+                        <td><b>@r.Analyte</b></td>
+                        <td class="faint mono">@(r.Code ?? "—")</td>
+                        <td class="mono"><b style="font-size:19px">@r.Value</b></td>
+                        <td class="faint">@r.Unit</td>
+                        <td class="mono faint">@(r.RefLow?.ToString() ?? "—") – @(r.RefHigh?.ToString() ?? "—")</td>
+                        <td>
+                            @if (r.RefLow.HasValue && r.RefHigh.HasValue)
+                            {
+                                <span class="gauge" data-value="@r.Value" data-low="@r.RefLow" data-high="@r.RefHigh"></span>
+                            }
+                            else
+                            {
+                                <span class="faint">—</span>
+                            }
+                        </td>
+                        <td><span class="flag @r.Flag">@r.Flag</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="note top @(critical > 0 ? "c" : abnormal > 0 ? "w" : "")">
+        <b>@L["XULOSA"]</b>
+        @d.Summary
+    </div>
+</section>

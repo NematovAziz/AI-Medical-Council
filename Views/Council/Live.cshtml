@@ -1,0 +1,80 @@
+@model CouncilLiveVm
+@{
+    ViewData["Title"] = "Jonli konsilium";
+    var streamUrl = Url.Action("Stream", "Council", new { patientId = Model.Patient.Id, encounterId = Model.Encounter.Id });
+}
+
+<div class="head anim">
+    <div>
+        <div class="eyebrow">@L["AI konsilium"]</div>
+        <h1>@L["Jonli konsilium"]</h1>
+        <p>@Model.Patient.FullName · #@Model.Encounter.Id</p>
+    </div>
+    <div class="head-actions">
+        <a class="btn" asp-controller="Patients" asp-action="Details" asp-route-id="@Model.Patient.Id">@L["Bemor kartasi"]</a>
+    </div>
+</div>
+
+<div id="council-live" data-stream="@streamUrl">
+    <section class="panel">
+        <div class="ph">
+            <div><h2>@L["Konsilium arenasi"]</h2><p id="council-phase">@L["ULANMOQDA"]…</p></div>
+            <span class="tag i">7 · 2</span>
+        </div>
+
+        <div class="arena">
+            <partial name="_RiskRing" model="@(0)" />
+
+            <div class="agents">
+                @foreach (var agent in Model.Roster)
+                {
+                    <div class="ag" data-agent="@agent.AgentName">
+                        <div class="n">
+                            <span>@agent.AgentName</span>
+                            <em>—</em>
+                        </div>
+                        <div class="bar"><i></i></div>
+                        <span class="s">@(agent.Round == 1 ? "1-RAUND · KUTMOQDA" : "2-RAUND · KUTMOQDA")</span>
+                        <div class="txt">@agent.Specialty</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <div class="cols" style="margin-top:14px">
+        <section class="panel">
+            <div class="ph"><div><h2>@L["Jarayon jurnali"]</h2></div></div>
+            <div id="council-log" style="max-height:230px;overflow:auto;font-size:11.5px;line-height:1.9"></div>
+        </section>
+
+        <section class="panel">
+            <div class="ph"><div><h2>@L["Kirish ma'lumotlari"]</h2></div></div>
+            <div class="vit">
+                <div class="@(Model.Encounter.SystolicBp >= 160 ? "warm" : "")">
+                    <span>BP</span>
+                    <b>@(Model.Encounter.SystolicBp?.ToString() ?? "—")/@(Model.Encounter.DiastolicBp?.ToString() ?? "—")</b>
+                    <small>mmHg</small>
+                </div>
+                <div class="@(Model.Encounter.HeartRate > 120 ? "hot" : "")">
+                    <span>YUT</span>
+                    <b>@(Model.Encounter.HeartRate?.ToString() ?? "—")</b>
+                    <small>bpm</small>
+                </div>
+                <div class="@(Model.Encounter.SpO2 < 92 ? "hot" : "")">
+                    <span>SpO₂</span>
+                    <b>@(Model.Encounter.SpO2?.ToString() ?? "—")</b>
+                    <small>%</small>
+                </div>
+                <div><span>Hb</span><b>@(Model.Encounter.Hemoglobin?.ToString() ?? "—")</b><small>g/L</small></div>
+                <div><span>GLYUKOZA</span><b>@(Model.Encounter.Glucose?.ToString() ?? "—")</b><small>mmol/L</small></div>
+                <div><span>@L["SANA"]</span><b style="font-size:13px">@Model.Encounter.OccurredAtUtc.ToLocalTime().ToString("HH:mm")</b><small>@Model.Encounter.OccurredAtUtc.ToLocalTime().ToString("dd.MM.yyyy")</small></div>
+            </div>
+
+            <div class="note top">
+                <b>@L["SIMPTOMLAR"]</b>
+                @Model.Encounter.Symptoms
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+@model int
+@{
+    var cls = Model >= 85 ? "c" : Model >= 60 ? "w" : "";
+}
+<div class="core-wrap" data-score="@Model">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="ring-track" cx="100" cy="100" r="92" />
+        <circle class="ring-track" cx="100" cy="100" r="70" />
+        <circle class="ring-track" cx="100" cy="100" r="48" />
+        <g transform="rotate(-90 100 100)">
+            <circle class="ring-val" cx="100" cy="100" r="82" stroke-width="9" stroke="#1467D6" />
+        </g>
+        <g class="sweep" opacity=".55">
+            <path d="M100,100 L100,8 A92,92 0 0,1 165,35 Z" fill="rgba(20,103,214,.10)" />
+        </g>
+    </svg>
+    <div class="core-node">
+        <b class="@cls">@Model</b>
+        <span>RISK SCORE</span>
+    </div>
+</div>

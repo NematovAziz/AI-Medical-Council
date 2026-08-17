@@ -49,6 +49,7 @@ Server-Sent Events
 Docker
 Railway
 Архитектура
+
 Patient
    ↓
 Medical History
